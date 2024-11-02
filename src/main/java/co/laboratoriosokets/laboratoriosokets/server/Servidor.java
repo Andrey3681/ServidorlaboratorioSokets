@@ -13,7 +13,7 @@ public class Servidor {
             System.out.println("esta iniando un servidor en el puerto: "+ puerto);
             while (true){
                 Socket socket= serverSocket.accept();
-                System.out.println("Jugador conectado "+ socket);
+                System.out.println("Jugador  conectado al servicio  "+ socket);
                 new Thread(new JugadorHandler(socket)).start();
             }
         } catch (IOException e) {
