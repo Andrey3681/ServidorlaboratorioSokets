@@ -1,5 +1,7 @@
 package co.laboratoriosokets.laboratoriosokets.server;
 
+import co.laboratoriosokets.laboratoriosokets.controllers.ControladorPrincipal;
+
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -8,19 +10,32 @@ import java.net.Socket;
 
 public class JugadorHandler implements Runnable {
     private final Socket socket;
+    ObjectOutputStream flujoSalida;
+    ObjectInputStream flujoEntrada;
+    ControladorPrincipal controladorPrincipal;
     public JugadorHandler(Socket socket) {
         this.socket=socket;
+        try {
+            flujoSalida= new ObjectOutputStream(socket.getOutputStream());
+            flujoEntrada= new ObjectInputStream(socket.getInputStream());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        controladorPrincipal= ControladorPrincipal.getInstancia();
     }
 
     @Override
     public void run() {
-        try(ObjectOutputStream flujoSalida = new ObjectOutputStream(socket.getOutputStream());
-            ObjectInputStream flujoEntrada = new ObjectInputStream(socket.getInputStream())) {
+        try {
+
             while (true){
                 String comando;
                 try {
                     comando=(String) flujoEntrada.readObject(); //otro tipo de entrada solo recibe strings
                     System.out.println("comando recibido "+ comando);
+                    controladorPrincipal.actualizarTablaMensajesEnviados(comando);
+
+
                 }catch (EOFException e){
                     break;
                 } catch (ClassNotFoundException e) {
@@ -43,5 +58,14 @@ public class JugadorHandler implements Runnable {
         flujoSalida.writeObject("mensaje recibido y redactado "+ comando);
         flujoSalida.flush();
         System.out.println(" se envio un mensaje");
+    }
+
+    public void enviarMensaje(String s) {
+        try {
+            flujoSalida.writeObject(s);
+            flujoSalida.flush();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

@@ -5,4 +5,6 @@ module co.laboratoriosokets.laboratoriosokets {
 
     opens co.laboratoriosokets.laboratoriosokets to javafx.fxml;
     exports co.laboratoriosokets.laboratoriosokets;
+    exports co.laboratoriosokets.laboratoriosokets.controllers;
+    opens co.laboratoriosokets.laboratoriosokets.controllers to javafx.fxml;
 }
